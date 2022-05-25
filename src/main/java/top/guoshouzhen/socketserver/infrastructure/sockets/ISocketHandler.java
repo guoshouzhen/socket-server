@@ -14,7 +14,7 @@ public interface ISocketHandler {
      * 具体处理方法
      * @author shouzhen.guo
      * @date 2022/5/21 19:14
-     * @param strReceiveData 接手数据
+     * @param strReceiveData 接收数据
      * @return top.guoshouzhen.idserver.model.Result
      */
     Result handle(String strReceiveData);
