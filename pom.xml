@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>top.guoshouzhen</groupId>
     <artifactId>socket-server</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -12,10 +12,17 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <version.slf4j>1.7.26</version.slf4j>
         <version.logback>1.2.3</version.logback>
         <version.jackson>2.11.1</version.jackson>
         <version.junit>4.13.1</version.junit>
+        <version.maven.assembly.plugin>2.5.5</version.maven.assembly.plugin>
+        <jar.name.suffix>jar-with-dependencies</jar.name.suffix>
+        <plugin-dockerfile-maven.version>1.4.13</plugin-dockerfile-maven.version>
+        <docker.repository.registry>registry.cn-hangzhou.aliyuncs.com</docker.repository.registry>
+        <docker.repository.namespace>blog-regs</docker.repository.namespace>
     </properties>
 
     <!--项目依赖-->
@@ -50,5 +57,52 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>socket-server</finalName>
+        <plugins>
+            <!--打成一个jar包：mvn clean compile assembly:single-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${version.maven.assembly.plugin}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>top.guoshouzhen.socketserver.SocketServerApplication</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>${jar.name.suffix}</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+            <!--docker镜像构建插件-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${plugin-dockerfile-maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--maven setting.xml中配置阿里云镜像服务的用户名密码-->
+                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+                    <!--镜像名-->
+                    <repository>${docker.repository.registry}/${docker.repository.namespace}/${project.artifactId}</repository>
+                    <!--此处参数将传递给dockerfile，其中ARG指令引用即可-->
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}-${jar.name.suffix}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
