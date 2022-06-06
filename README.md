@@ -78,10 +78,57 @@ split16：(char)16
 ```
 
 #### 使用说明
-按照请求报文格式,使用指定分割符拼接请求数据,通过socket client发送请求数据数据,并接收返回数据.
+* server：实现`ISocketServer`接口，实例化`SocketEngine`，指定监听端口，并注册methodId及其对应的handler，调用SocketEngine实例的`run()`方法运行，并在程序入口中注册该服务服务。  
+    示例：
+    ```java
+  public class MyServerImpl implements ISocketServer {
+      /**
+       * 启动服务
+       * @author shouzhen.guo
+       * @date 2022/5/21 23:31
+       */
+      @Override
+      public void start() {
+          SocketEngine socketEngine = new SocketEngine(55666);
+  
+          socketEngine.register("1", strReceiveData -> {
+              //TODO ...
+              return Result.success();
+          });
+          
+          socketEngine.register("2", strReceiveData -> {
+                //TODO ...
+                return Result.success();
+          });
+  
+         ...
+  
+          //启动服务，监听端口
+          socketEngine.run();
+      }
+  }
+  
+  //主程序类中修改registerServices方法注册新增服务：
+  public class SocketServerApplication { 
+      ...
+   
+      /**
+       * 注册socket服务
+       * @author shouzhen.guo
+       * @date 2022/5/21 22:57
+       */
+      private static void registerServices(){
+          //注册分布式id生成服务
+          SERVERS.add(new MyServerImpl());
+      }
+  
+      ...
+  }
+    ```
+* client：按照请求报文格式,使用指定分割符拼接请求数据,通过socket client发送请求数据数据,并接收返回数据。
 #### 部署说明
 * docker容器部署:
-	- 使用`mvn clean compile assembly:single`打成一个jar包
+	- 使用`mvn clean compile assembly:single`命令打成一个jar包
 	- 使用dockerfile-maven插件进行build,构建镜像
 	- 使用dockerfile-maven插件进行push,推送到远程镜像仓库
 	- 在服务器上拉取镜像,并运行
