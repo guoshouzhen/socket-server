@@ -7,7 +7,7 @@
 ```
 socket-server
 │  .gitignore
-│  Dockerfile -------------dockerfile
+│  Dockerfile -------------dockerfile文件
 │  pom.xml ----------------pom文件
 │  
 └─src
@@ -18,7 +18,7 @@ socket-server
     │  │          └─socketserver
     │  │              │  SocketServerApplication.java -------主类，程序入口
     │  │              │  
-    │  │              ├─infrastructure ----------------------基础架构层
+    │  │              ├─infrastructure ----------------------基础层
     │  │              │  │  SnowFlake.java ------------------雪花算法实现
     │  │              │  │  
     │  │              │  ├─sockets --------------------------socket封装层
@@ -56,7 +56,7 @@ socket-server
                 
 ```
 #### 框架说明
-由于某些业务场景请求的数据比较简单或者性能要求较高，而且又不需要Http请求报文中的请求头等数据，则可以通过socket方式，自定义请求报文格式，减少不必要的数据包，减小通信开销。
+由于某些业务场景请求的数据比较简单或者性能要求较高，而且又不需要Http请求中的请求头等数据，则可以通过socket方式，自定义请求报文格式，减少不必要的数据包，减小通信开销。
 ##### 报文协定
 * **分割符定义**  
 split26：(char)26  
@@ -78,7 +78,7 @@ split16：(char)16
 ```
 
 #### 使用说明
-* server：实现`ISocketServer`接口，实例化`SocketEngine`，指定监听端口，并注册methodId及其对应的handler，调用SocketEngine实例的`run()`方法运行，并在程序入口中注册该服务服务。  
+* server：实现`ISocketServer`接口，实例化`SocketEngine`，指定监听端口，并注册methodId及其对应的handler，调用SocketEngine实例的`run()`方法运行，并在程序入口中注册该服务。  
     示例：
     ```java
   public class MyServerImpl implements ISocketServer {
@@ -118,14 +118,14 @@ split16：(char)16
        * @date 2022/5/21 22:57
        */
       private static void registerServices(){
-          //注册分布式id生成服务
+          //注册自定义服务
           SERVERS.add(new MyServerImpl());
       }
   
       ...
   }
     ```
-* client：按照请求报文格式,使用指定分割符拼接请求数据,通过socket client发送请求数据数据,并接收返回数据。
+* client：按照请求报文格式,使用指定分割符拼接请求数据,通过socket client发送请求数据,并接收返回数据。
 #### 部署说明
 * docker容器部署:
 	- 使用`mvn clean compile assembly:single`命令打成一个jar包
