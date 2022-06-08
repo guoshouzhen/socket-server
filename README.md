@@ -3,6 +3,8 @@
 #### 介绍
 一个快速开发socket接口的简单框架，内含一个分布式id生成服务，基于雪花算法，通过socket调用。
 
+关键词：java，socket，snow flake
+
 #### 程序结构说明
 ```
 socket-server
